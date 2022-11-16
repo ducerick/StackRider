@@ -34,7 +34,7 @@ public class PlayerCollisionController : MonoBehaviour
         if (other.transform.CompareTag("Wall"))
         {
             Transform otherTranform = other.transform;
-            GameStackController.Instance.DropBall(_scaleOfWall);
+            GameStackController.Instance.DropBall(_scaleOfWall, otherTranform);
         }
     }
 

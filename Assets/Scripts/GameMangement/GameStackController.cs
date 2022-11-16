@@ -19,7 +19,6 @@ public class GameStackController : MonoBehaviour
     /// <summary>
     ///     The transform of Free stack when drop ball
     /// </summary>
-    //[SerializeField] Transform _freePosition;
     /// <summary>
     ///     The List Stack contains ball
     /// </summary>
@@ -55,6 +54,11 @@ public class GameStackController : MonoBehaviour
         GameEventController.Instance.OnThrowTheWall += PushStack;
     }
 
+    private void OnDisable()
+    {
+        GameEventController.Instance.OnThrowTheWall -= PushStack;
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -85,7 +89,7 @@ public class GameStackController : MonoBehaviour
     /// </param>
     public void PickUp(Transform ball)
     {
-        ball.transform.SetParent(_stackPosition);
+        ball.SetParent(_stackPosition);
         _stackBall.Add(ball);
         PushStack();
     }
@@ -108,7 +112,7 @@ public class GameStackController : MonoBehaviour
     /// <param name="obstacleSize">
     ///     The hight of Wall equal to number ball will drop
     /// </param>
-    public void DropBall(float obstacleSize)
+    public void DropBall(float obstacleSize, Transform collision)
     {
         int numberBallDrop = (int)(obstacleSize / _scaleOfBall);
         if (numberBallDrop > NumberOfBall)
@@ -120,7 +124,7 @@ public class GameStackController : MonoBehaviour
             int removeIndex = _stackBall.Count - 1;
             for (int i = 0; i < numberBallDrop; i++)
             {
-                _stackBall[removeIndex].SetParent(null);
+                _stackBall[removeIndex].GetChild(0).SetParent(null);
                 _stackBall.RemoveAt(removeIndex);
                 removeIndex--;
             }
