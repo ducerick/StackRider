@@ -4,20 +4,42 @@ using UnityEngine;
 
 public class GameStackController : MonoBehaviour
 {
-    Transform _parentPickup;
+    /// <summary>
+    ///     This is a transform of Player
+    /// </summary>
     [SerializeField] Transform _player;
+    /// <summary>
+    ///     This is a transform of initialize Ball under the Player
+    /// </summary>
     [SerializeField] Transform _initBall;
-
+    /// <summary>
+    ///     This is a transform of Stack that contains any balls player pick up
+    /// </summary>
     [SerializeField] Transform _stackPosition;
+    /// <summary>
+    ///     The transform of Free stack when drop ball
+    /// </summary>
+    //[SerializeField] Transform _freePosition;
+    /// <summary>
+    ///     The List Stack contains ball
+    /// </summary>
     private List<Transform> _stackBall = new List<Transform>();
 
     [SerializeField] float _ballRotationSpeed;
-    [SerializeField] float _scaleOfBall;
+    private float _scaleOfBall;
 
     public int NumberOfBall
     {
         get { return _stackBall.Count; }
         private set { }
+    }
+
+    public static GameStackController Instance;
+
+    private void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else Destroy(this);
     }
 
     // Start is called before the first frame update
@@ -26,6 +48,11 @@ public class GameStackController : MonoBehaviour
         _initBall.SetParent(_stackPosition);
         _scaleOfBall = _initBall.localScale.y;
         _stackBall.Add(_initBall);
+    }
+
+    private void OnEnable()
+    {
+        GameEventController.Instance.OnThrowTheWall += PushStack;
     }
 
     // Update is called once per frame
@@ -37,7 +64,10 @@ public class GameStackController : MonoBehaviour
         }
     }
 
-    void RotateBallOnStack()
+    /// <summary>
+    ///     Rotate all ball of the stack in present.
+    /// </summary>
+    private void RotateBallOnStack()
     {
         int rotationDirection = 1;
         for (int i = _stackBall.Count - 1; i >= 0; i--)
@@ -47,14 +77,23 @@ public class GameStackController : MonoBehaviour
         }
     }
 
-    void PickUp(Transform ball)
+    /// <summary>
+    ///     Push a ball to List Stack when collider
+    /// </summary>
+    /// <param name="ball">
+    ///     Transform of ball that player pick up
+    /// </param>
+    public void PickUp(Transform ball)
     {
         ball.transform.SetParent(_stackPosition);
         _stackBall.Add(ball);
         PushStack();
     }
 
-    void PushStack()
+    /// <summary>
+    ///     Sorting position of all ball and position of Player.
+    /// </summary>
+    private void PushStack()
     {
         for (int i = 0; i < _stackBall.Count; i++)
         {
@@ -63,7 +102,13 @@ public class GameStackController : MonoBehaviour
         _player.localPosition = new Vector3(0f, _initBall.localPosition.y + _scaleOfBall / 2, 0f);
     }
 
-    void DropBall(float obstacleSize)
+    /// <summary>
+    ///     Drop some of ball in stack when collision with the wall
+    /// </summary>
+    /// <param name="obstacleSize">
+    ///     The hight of Wall equal to number ball will drop
+    /// </param>
+    public void DropBall(float obstacleSize)
     {
         int numberBallDrop = (int)(obstacleSize / _scaleOfBall);
         if (numberBallDrop > NumberOfBall)
@@ -72,8 +117,13 @@ public class GameStackController : MonoBehaviour
         }
         else
         {
-
+            int removeIndex = _stackBall.Count - 1;
+            for (int i = 0; i < numberBallDrop; i++)
+            {
+                _stackBall[removeIndex].SetParent(null);
+                _stackBall.RemoveAt(removeIndex);
+                removeIndex--;
+            }
         }
     }
-   
 }

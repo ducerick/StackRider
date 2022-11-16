@@ -10,11 +10,12 @@ public class PlayerControllerStackRider : MonoBehaviour
 
     private Rigidbody _myRigidBody;
     private float _movementBound;
-
+    
     // Start is called before the first frame update
     void Start()
     {
         _myRigidBody = GetComponent<Rigidbody>();
+        
     }
 
     // Update is called once per frame
