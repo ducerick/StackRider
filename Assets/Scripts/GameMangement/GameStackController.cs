@@ -17,9 +17,6 @@ public class GameStackController : MonoBehaviour
     /// </summary>
     [SerializeField] Transform _stackPosition;
     /// <summary>
-    ///     The transform of Free stack when drop ball
-    /// </summary>
-    /// <summary>
     ///     The List Stack contains ball
     /// </summary>
     private List<Transform> _stackBall = new List<Transform>();
@@ -51,12 +48,12 @@ public class GameStackController : MonoBehaviour
 
     private void OnEnable()
     {
-        GameEventController.Instance.OnThrowTheWall += PushStack;
+        //GameEventController.Instance.OnThrowTheWall += PushStack;
     }
 
     private void OnDisable()
     {
-        GameEventController.Instance.OnThrowTheWall -= PushStack;
+        //GameEventController.Instance.OnThrowTheWall -= PushStack;
     }
 
     // Update is called once per frame
@@ -97,7 +94,7 @@ public class GameStackController : MonoBehaviour
     /// <summary>
     ///     Sorting position of all ball and position of Player.
     /// </summary>
-    private void PushStack()
+    public void PushStack()
     {
         for (int i = 0; i < _stackBall.Count; i++)
         {
@@ -114,8 +111,8 @@ public class GameStackController : MonoBehaviour
     /// </param>
     public void DropBall(float obstacleSize, Transform collision)
     {
-        int numberBallDrop = (int)(obstacleSize / _scaleOfBall);
-        if (numberBallDrop > NumberOfBall)
+        int numberBallDrop = (int)(obstacleSize / _scaleOfBall) * collision.childCount;
+        if (numberBallDrop >= NumberOfBall)
         {
             GameStateController.Instance.SetState(GameState.Failed);
         }
@@ -124,7 +121,8 @@ public class GameStackController : MonoBehaviour
             int removeIndex = _stackBall.Count - 1;
             for (int i = 0; i < numberBallDrop; i++)
             {
-                _stackBall[removeIndex].GetChild(0).SetParent(null);
+                _stackBall[removeIndex].SetParent(null);
+                _stackBall[removeIndex].GetChild(0).GetComponent<SphereCollider>().enabled = false;
                 _stackBall.RemoveAt(removeIndex);
                 removeIndex--;
             }

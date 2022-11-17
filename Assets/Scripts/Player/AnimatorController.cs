@@ -18,13 +18,21 @@ public class AnimatorController : MonoBehaviour
     void Start()
     {
         _animator = GetComponent<Animator>();
-        Instance.RunBackWard();
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        switch (GameStateController.Instance.GetState())
+        {
+            case GameState.Playing:
+                RunBackWard();
+                break;
+            case GameState.Failed:
+                Lose();
+                break;
+        }
     }
 
     public void Idle()
@@ -39,7 +47,7 @@ public class AnimatorController : MonoBehaviour
 
     public void Lose()
     {
-        
+        _animator.SetInteger("StackRiderStatus", 2);
     }
 
     public void Cheer()

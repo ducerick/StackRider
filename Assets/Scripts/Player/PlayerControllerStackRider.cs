@@ -9,7 +9,6 @@ public class PlayerControllerStackRider : MonoBehaviour
     [SerializeField] float _sideLerpSpeed;
 
     private Rigidbody _myRigidBody;
-    private float _movementBound;
     
     // Start is called before the first frame update
     void Start()
@@ -45,7 +44,7 @@ public class PlayerControllerStackRider : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, 100))
         {
-            transform.position = Vector3.Lerp(transform.position, new Vector3(hit.point.x, transform.position.y, hit.point.z), _sideLerpSpeed * Time
+            transform.position = Vector3.Lerp(transform.position, new Vector3(hit.point.x, transform.position.y, transform.position.z), _sideLerpSpeed * Time
                 .deltaTime);
         }
     }

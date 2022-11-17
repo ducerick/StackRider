@@ -33,8 +33,13 @@ public class PlayerCollisionController : MonoBehaviour
         
         if (other.transform.CompareTag("Wall"))
         {
-            Transform otherTranform = other.transform;
+            Transform otherTranform = other.transform.parent;
             GameStackController.Instance.DropBall(_scaleOfWall, otherTranform);
+        }
+
+        if (other.transform.CompareTag("Coin"))
+        {
+            other.gameObject.SetActive(false);
         }
     }
 
@@ -42,7 +47,7 @@ public class PlayerCollisionController : MonoBehaviour
     {
         if (other.transform.CompareTag("Wall"))
         {
-            GameEventController.Instance.ThrowTHeWallMethod();
+            GameStackController.Instance.PushStack();
         }
     }
 }
