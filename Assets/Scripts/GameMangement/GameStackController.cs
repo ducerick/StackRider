@@ -73,7 +73,7 @@ public class GameStackController : MonoBehaviour
         int rotationDirection = 1;
         for (int i = _stackBall.Count - 1; i >= 0; i--)
         {
-            _stackBall[i].Rotate(rotationDirection * _ballRotationSpeed * Time.deltaTime, 0f, 0f);
+            _stackBall[i].GetChild(0).Rotate(rotationDirection * _ballRotationSpeed * Time.deltaTime, 0f, 0f);
             rotationDirection *= -1;
         }
     }
@@ -98,9 +98,12 @@ public class GameStackController : MonoBehaviour
     {
         for (int i = 0; i < _stackBall.Count; i++)
         {
+            //Vector3 oldPosition = _stackBall[i].localPosition;
+            //Vector3 newPosition = new Vector3(0f, (_stackBall.Count - i - 1) * _scaleOfBall, 0f);
+            //_stackBall[i].localPosition = Vector3.Lerp(oldPosition, newPosition, 50 * Time.deltaTime);
             _stackBall[i].localPosition = new Vector3(0f, (_stackBall.Count - i - 1) * _scaleOfBall, 0f);
         }
-        _player.localPosition = new Vector3(0f, _initBall.localPosition.y + _scaleOfBall / 2, 0f);
+        _player.localPosition = new Vector3(0f, _initBall.localPosition.y + _scaleOfBall , 0f);
     }
 
     /// <summary>
@@ -122,7 +125,7 @@ public class GameStackController : MonoBehaviour
             for (int i = 0; i < numberBallDrop; i++)
             {
                 _stackBall[removeIndex].SetParent(null);
-                _stackBall[removeIndex].GetChild(0).GetComponent<SphereCollider>().enabled = false;
+                _stackBall[removeIndex].GetComponent<SphereCollider>().enabled = false;
                 _stackBall.RemoveAt(removeIndex);
                 removeIndex--;
             }

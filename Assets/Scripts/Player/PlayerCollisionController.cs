@@ -27,7 +27,7 @@ public class PlayerCollisionController : MonoBehaviour
     {
         if (other.transform.CompareTag("Ball"))
         {
-            Transform otherTransform = other.transform.parent;
+            Transform otherTransform = other.transform;
             GameStackController.Instance.PickUp(otherTransform);
         }
         
