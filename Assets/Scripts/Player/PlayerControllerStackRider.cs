@@ -6,7 +6,6 @@ public class PlayerControllerStackRider : MonoBehaviour
 {
     [SerializeField] bool _isPlaying;
     [SerializeField] float _moveForwardSpeed;
-    [SerializeField] float _sideLerpSpeed;
 
     private Rigidbody _myRigidBody;
     
@@ -28,7 +27,6 @@ public class PlayerControllerStackRider : MonoBehaviour
         if (Input.GetMouseButton(0))
         {
             if (_isPlaying == false) _isPlaying = true;
-            MoveSideWays();
             GameStateController.Instance.SetState(GameState.Playing);
         }
     }
@@ -36,17 +34,6 @@ public class PlayerControllerStackRider : MonoBehaviour
     private void MoveForward()
     {
         _myRigidBody.velocity = Vector3.forward * _moveForwardSpeed;
-    }
-
-    private void MoveSideWays()
-    {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, 100))
-        {
-            transform.position = Vector3.Lerp(transform.position, new Vector3(hit.point.x, transform.position.y, transform.position.z), _sideLerpSpeed * Time
-                .deltaTime);
-        }
     }
 
 }

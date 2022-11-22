@@ -41,19 +41,7 @@ public class GameStackController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _player.SetParent(_stackPosition);
         _scaleOfBall = _initBall.localScale.y;
-        //_stackBall.Add(_initBall);
-    }
-
-    private void OnEnable()
-    {
-        //GameEventController.Instance.OnThrowTheWall += PushStack;
-    }
-
-    private void OnDisable()
-    {
-        //GameEventController.Instance.OnThrowTheWall -= PushStack;
     }
 
     // Update is called once per frame
