@@ -41,9 +41,9 @@ public class GameStackController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _initBall.SetParent(_stackPosition);
+        _player.SetParent(_stackPosition);
         _scaleOfBall = _initBall.localScale.y;
-        _stackBall.Add(_initBall);
+        //_stackBall.Add(_initBall);
     }
 
     private void OnEnable()
@@ -87,7 +87,8 @@ public class GameStackController : MonoBehaviour
     public void PickUp(Transform ball)
     {
         ball.SetParent(_stackPosition);
-        _stackBall.Add(ball);
+        if (!_stackBall.Contains(ball))
+            _stackBall.Add(ball);
         PushStack();
     }
 
@@ -98,12 +99,9 @@ public class GameStackController : MonoBehaviour
     {
         for (int i = 0; i < _stackBall.Count; i++)
         {
-            //Vector3 oldPosition = _stackBall[i].localPosition;
-            //Vector3 newPosition = new Vector3(0f, (_stackBall.Count - i - 1) * _scaleOfBall, 0f);
-            //_stackBall[i].localPosition = Vector3.Lerp(oldPosition, newPosition, 50 * Time.deltaTime);
             _stackBall[i].localPosition = new Vector3(0f, (_stackBall.Count - i - 1) * _scaleOfBall, 0f);
         }
-        _player.localPosition = new Vector3(0f, _initBall.localPosition.y + _scaleOfBall , 0f);
+        _player.localPosition = new Vector3(0f, _initBall.localPosition.y + _scaleOfBall, 0f);
     }
 
     /// <summary>
@@ -124,8 +122,7 @@ public class GameStackController : MonoBehaviour
             int removeIndex = _stackBall.Count - 1;
             for (int i = 0; i < numberBallDrop; i++)
             {
-                _stackBall[removeIndex].SetParent(null);
-                _stackBall[removeIndex].GetComponent<SphereCollider>().enabled = false;
+                _stackBall[removeIndex].SetParent(collision);
                 _stackBall.RemoveAt(removeIndex);
                 removeIndex--;
             }

@@ -4,13 +4,9 @@ using UnityEngine;
 
 public class PlayerCollisionController : MonoBehaviour
 {
-    [SerializeField] Transform _ball;
-    [SerializeField] Transform _coin;
     [SerializeField] Transform _wall;
 
     private float _scaleOfWall;
-    private float _scaleOfCoin;
-    private float _scaleOfBall;
     // Start is called before the first frame update
     void Start()
     {
@@ -47,7 +43,7 @@ public class PlayerCollisionController : MonoBehaviour
     {
         if (other.transform.CompareTag("Wall"))
         {
-            GameStackController.Instance.PushStack();
+           
         }
     }
 }
