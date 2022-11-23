@@ -110,11 +110,11 @@ public class GameStackController : MonoBehaviour
         {
             GameStateController.Instance.SetState(GameState.Failed);
             PlayerControllerStackRider._isPlaying = false;
-            if (NumberOfBall == 1)
+            for (int i = 0; i < NumberOfBall; i++)
             {
-                _initBall.SetParent(collision);
-                _player.SetParent(_initBall);
-                CameraController.Instance.Player = _initBall;
+                _stackBall[i].SetParent(collision);
+                _player.SetParent(_stackBall[i]);
+                CameraController.Instance.Player = _stackBall[i];
             }
         }
         else
