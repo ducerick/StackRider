@@ -476,11 +476,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8595672614604248376, guid: 5125d780a9c7e9d4bad66389322e7a19, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 104
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 8595672614604248376, guid: 5125d780a9c7e9d4bad66389322e7a19, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 190
+      value: 179
       objectReference: {fileID: 0}
     - target: {fileID: 8595672614604248376, guid: 5125d780a9c7e9d4bad66389322e7a19, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3006,7 +3006,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1413193660}
   m_LocalRotation: {x: -0, y: -0.13107328, z: -0, w: 0.9913727}
-  m_LocalPosition: {x: 5.85, y: 7.35, z: -19.62}
+  m_LocalPosition: {x: 6, y: 7, z: -20}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3025,7 +3025,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5a4a50e9c35bb64baac9e3a8a056e4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Player: {fileID: 1722964964}
+  Player: {fileID: 1722964965}
+  EndTranform: {fileID: 856558536}
+  _speedMoveAround: 40
 --- !u!114 &1413193665
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4074,7 +4076,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37eca975eabe2d54f9d3d8f60c8d9bc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveForwardSpeed: 5
+  _moveForwardSpeed: 10
+  _speedFinish: 5
+  EndFlatform: {fileID: 856558536}
 --- !u!114 &1836336762
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4090,8 +4094,7 @@ MonoBehaviour:
   _player: {fileID: 1866396697}
   _initBall: {fileID: 402730634}
   _stackPosition: {fileID: 1722964965}
-  _speedFinish: 10
-  _ballRotationSpeed: 200
+  _ballRotationSpeed: 50
 --- !u!114 &1836336763
 MonoBehaviour:
   m_ObjectHideFlags: 0

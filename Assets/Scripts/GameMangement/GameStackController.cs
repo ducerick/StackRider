@@ -20,7 +20,6 @@ public class GameStackController : MonoBehaviour
     /// <summary>
     ///     The List Stack contains ball
     /// </summary>
-    public float _speedFinish;
 
     private List<Transform> _stackBall = new List<Transform>();
 
@@ -45,7 +44,6 @@ public class GameStackController : MonoBehaviour
     void Start()
     {
         _scaleOfBall = _initBall.localScale.y;
-        GameEventController.Instance.OnFinishLine += OnFinishLine;
     }
 
     // Update is called once per frame
@@ -89,11 +87,14 @@ public class GameStackController : MonoBehaviour
     /// </summary>
     public void PushStack()
     {
-        for (int i = 0; i < _stackBall.Count; i++)
+        if (GameStateController.Instance.GetState() == GameState.Playing)
         {
-            _stackBall[i].localPosition = new Vector3(0f, (_stackBall.Count - i - 1) * _scaleOfBall, 0f);
+            for (int i = 0; i < _stackBall.Count; i++)
+            {
+                _stackBall[i].localPosition = new Vector3(0f, (_stackBall.Count - i - 1) * _scaleOfBall, 0f);
+            }
+            _player.localPosition = new Vector3(0f, _initBall.localPosition.y + _scaleOfBall, 0f);
         }
-        _player.localPosition = new Vector3(0f, _initBall.localPosition.y + _scaleOfBall, 0f);
     }
 
     /// <summary>
@@ -113,7 +114,7 @@ public class GameStackController : MonoBehaviour
             {
                 _initBall.SetParent(collision);
                 _player.SetParent(_initBall);
-                CameraController.Instance.Player = _initBall.gameObject;
+                CameraController.Instance.Player = _initBall;
             }
         }
         else
@@ -128,11 +129,15 @@ public class GameStackController : MonoBehaviour
         }
     }
 
-    private void OnFinishLine()
+    public void PopStack(Transform endtranform)
     {
-        PlayerControllerStackRider._isPlaying = false;
-        _player.GetComponent<Rigidbody>().velocity = Vector3.zero;
-        Vector3 finishPosition = new Vector3(0, 0, 82);
-        _player.position = Vector3.MoveTowards(_player.position, finishPosition, _speedFinish * Time.deltaTime);
+        int count = _stackBall.Count;
+        
+        for (int i = 0; i <= count - 1; i++)
+        {
+            Destroy(_stackBall[i].gameObject, count - i + Time.deltaTime);
+        }
+
+        CameraController.Instance.SetPosition(endtranform);
     }
 }
