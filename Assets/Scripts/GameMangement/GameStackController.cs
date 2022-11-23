@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,6 +20,8 @@ public class GameStackController : MonoBehaviour
     /// <summary>
     ///     The List Stack contains ball
     /// </summary>
+    public float _speedFinish;
+
     private List<Transform> _stackBall = new List<Transform>();
 
     [SerializeField] float _ballRotationSpeed;
@@ -42,6 +45,7 @@ public class GameStackController : MonoBehaviour
     void Start()
     {
         _scaleOfBall = _initBall.localScale.y;
+        GameEventController.Instance.OnFinishLine += OnFinishLine;
     }
 
     // Update is called once per frame
@@ -104,6 +108,13 @@ public class GameStackController : MonoBehaviour
         if (numberBallDrop >= NumberOfBall)
         {
             GameStateController.Instance.SetState(GameState.Failed);
+            PlayerControllerStackRider._isPlaying = false;
+            if (NumberOfBall == 1)
+            {
+                _initBall.SetParent(collision);
+                _player.SetParent(_initBall);
+                CameraController.Instance.Player = _initBall.gameObject;
+            }
         }
         else
         {
@@ -115,5 +126,13 @@ public class GameStackController : MonoBehaviour
                 removeIndex--;
             }
         }
+    }
+
+    private void OnFinishLine()
+    {
+        PlayerControllerStackRider._isPlaying = false;
+        _player.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        Vector3 finishPosition = new Vector3(0, 0, 82);
+        _player.position = Vector3.MoveTowards(_player.position, finishPosition, _speedFinish * Time.deltaTime);
     }
 }

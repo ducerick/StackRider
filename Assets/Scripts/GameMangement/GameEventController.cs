@@ -24,13 +24,13 @@ public class GameEventController : MonoBehaviour
         else Destroy(this);
     }
 
-    public delegate void ThrowTheWall();
-    public event ThrowTheWall OnThrowTheWall;
+    public delegate void FinishLine();
+    public event FinishLine OnFinishLine;
 
-    public void ThrowTHeWallMethod()
+    public void OnFinishLineMethod()
     {
-        if (OnThrowTheWall != null)
-            OnThrowTheWall();
+        if (OnFinishLine != null)
+            OnFinishLine();
     }
 
 }

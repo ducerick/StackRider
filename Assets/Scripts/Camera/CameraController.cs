@@ -22,4 +22,11 @@ public class CameraController : MonoBehaviour
         transform.position = Player.transform.position + _offset;
     }
 
+    public static CameraController Instance;
+
+    private void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else Destroy(this);
+    }
 }

@@ -37,6 +37,12 @@ public class PlayerCollisionController : MonoBehaviour
         {
             other.gameObject.SetActive(false);
         }
+
+        if (other.transform.CompareTag("End"))
+        {
+            GameStateController.Instance.SetState(GameState.Success);
+            GameEventController.Instance.OnFinishLineMethod();
+        }
     }
 
     private void OnTriggerExit(Collider other)
