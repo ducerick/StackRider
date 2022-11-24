@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerControllerStackRider : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class PlayerControllerStackRider : MonoBehaviour
     private Rigidbody _myRigidBody;
     public float _speedFinish;
     public Transform EndFlatform;
+    public Slider Slider;
 
     // Start is called before the first frame update
     void Start()
@@ -30,6 +32,7 @@ public class PlayerControllerStackRider : MonoBehaviour
         if (Input.GetMouseButton(0) && _isPlaying)
         {
             GameStateController.Instance.SetState(GameState.Playing);
+            Slider.gameObject.SetActive(false);
         }
 
         if (GameStateController.Instance.GetState() == GameState.Success)

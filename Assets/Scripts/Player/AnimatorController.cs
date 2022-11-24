@@ -32,6 +32,9 @@ public class AnimatorController : MonoBehaviour
             case GameState.Failed:
                 Lose();
                 break;
+            case GameState.Success:
+                Cheer();
+                break;
         }
     }
 
@@ -52,7 +55,7 @@ public class AnimatorController : MonoBehaviour
 
     public void Cheer()
     {
-        
+        _animator.SetInteger("StackRiderStatus", 3);
     }
 
     public void Dance()

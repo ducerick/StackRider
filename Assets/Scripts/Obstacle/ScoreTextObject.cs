@@ -14,10 +14,9 @@ public class ScoreTextObject : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (transform.localPosition.y > _destinyPosition)
+        if (transform.localPosition.y == _destinyPosition)
         {
             gameObject.SetActive(false);
-            transform.localPosition = new Vector3(transform.localPosition.x, 0, transform.localPosition.z);
         }
     }
 

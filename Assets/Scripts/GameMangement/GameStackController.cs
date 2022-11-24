@@ -20,11 +20,14 @@ public class GameStackController : MonoBehaviour
     /// <summary>
     ///     The List Stack contains ball
     /// </summary>
+    [SerializeField] Transform _mainPlayer;
 
     private List<Transform> _stackBall = new List<Transform>();
 
     [SerializeField] float _ballRotationSpeed;
     private float _scaleOfBall;
+    public static int _checkMainPosition;
+    public static int _numberOfBallRemain;
 
     public int NumberOfBall
     {
@@ -44,6 +47,7 @@ public class GameStackController : MonoBehaviour
     void Start()
     {
         _scaleOfBall = _initBall.localScale.y;
+        _checkMainPosition = -1;
     }
 
     // Update is called once per frame
@@ -52,6 +56,22 @@ public class GameStackController : MonoBehaviour
         if (GameStateController.Instance.GetState() == GameState.Playing)
         {
             RotateBallOnStack();
+        }
+
+        if (GameStateController.Instance.GetState() == GameState.Success)
+        {
+           if ((int)_mainPlayer.localPosition.y == _checkMainPosition)
+            {
+                PlayerCollisionController.Instance.OnePlusMove(5 * (-_checkMainPosition), 2);
+                GameScoreController.Instance.SetScore(5 * (-_checkMainPosition) - 1);
+                _checkMainPosition -= 1;
+            }
+
+           if (_checkMainPosition == -_numberOfBallRemain -1)
+            {
+                GameScoreController.Instance.WrieFile();
+                GamePopup.Instance.SetPopup();
+            }
         }
     }
 
@@ -74,12 +94,17 @@ public class GameStackController : MonoBehaviour
     /// <param name="ball">
     ///     Transform of ball that player pick up
     /// </param>
-    public void PickUp(Transform ball)
+    public bool PickUp(Transform ball)
     {
+        bool isHave = true;
         ball.SetParent(_stackPosition);
         if (!_stackBall.Contains(ball))
+        {
+            isHave = false;
             _stackBall.Add(ball);
+        }
         PushStack();
+        return isHave;
     }
 
     /// <summary>
@@ -108,21 +133,14 @@ public class GameStackController : MonoBehaviour
         int numberBallDrop = (int)(obstacleSize / _scaleOfBall) * collision.childCount;
         if (numberBallDrop >= NumberOfBall)
         {
-            GameStateController.Instance.SetState(GameState.Failed);
-            PlayerControllerStackRider._isPlaying = false;
-            for (int i = 0; i < NumberOfBall; i++)
-            {
-                _stackBall[i].SetParent(collision);
-                _player.SetParent(_stackBall[i]);
-                CameraController.Instance.Player = _stackBall[i];
-            }
+            GameFailed(collision);
         }
         else
         {
             int removeIndex = _stackBall.Count - 1;
             for (int i = 0; i < numberBallDrop; i++)
             {
-                _stackBall[removeIndex].SetParent(collision);
+                _stackBall[removeIndex].SetParent(null);
                 _stackBall.RemoveAt(removeIndex);
                 removeIndex--;
             }
@@ -131,13 +149,28 @@ public class GameStackController : MonoBehaviour
 
     public void PopStack(Transform endtranform)
     {
-        int count = _stackBall.Count;
+        _numberOfBallRemain = _stackBall.Count;
         
-        for (int i = 0; i <= count - 1; i++)
+        for (int i = 0; i <= _numberOfBallRemain - 1; i++)
         {
-            Destroy(_stackBall[i].gameObject, count - i + Time.deltaTime);
+            Destroy(_stackBall[i].gameObject, _numberOfBallRemain - i + Time.deltaTime);
         }
-
         CameraController.Instance.SetPosition(endtranform);
+    }
+
+    private void GameFailed(Transform collision)
+    {
+        GameStateController.Instance.SetState(GameState.Failed);
+        PlayerControllerStackRider._isPlaying = false;
+        GameScoreController.Instance.WrieFile();
+        GamePopup.Instance.SetText("TRY AGAIN");
+        GamePopup.Instance.SetPopup();
+        for (int i = 0; i < NumberOfBall; i++)
+        {
+            _stackBall[i].SetParent(collision);
+            _player.SetParent(_stackBall[i]);
+            CameraController.Instance.Player = _stackBall[i];
+            _stackPosition.GetComponent<SphereCollider>().enabled = false;
+        }
     }
 }
