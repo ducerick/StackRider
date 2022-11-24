@@ -69,7 +69,7 @@ public class GameStackController : MonoBehaviour
 
            if (_checkMainPosition == -_numberOfBallRemain -1)
             {
-                GameScoreController.Instance.WrieFile();
+                GameScoreController.Instance.WrieFileScore();
                 GamePopup.Instance.SetPopup();
             }
         }
@@ -162,9 +162,11 @@ public class GameStackController : MonoBehaviour
     {
         GameStateController.Instance.SetState(GameState.Failed);
         PlayerControllerStackRider._isPlaying = false;
-        GameScoreController.Instance.WrieFile();
+        GameScoreController.Instance.WrieFileScore();
         GamePopup.Instance.SetText("TRY AGAIN");
         GamePopup.Instance.SetPopup();
+        GamePopup.Instance.DeActivateButtonAdv();
+        _stackPosition.GetChild(0).gameObject.SetActive(false);
         for (int i = 0; i < NumberOfBall; i++)
         {
             _stackBall[i].SetParent(collision);

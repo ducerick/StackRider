@@ -6,7 +6,8 @@ using UnityEngine.UI;
 public class GamePopup : MonoBehaviour
 {
     [SerializeField] GameObject PopupMenu;
-    [SerializeField] Text ButtonText;
+    [SerializeField] Text ButtonContinueOrAgain;
+    [SerializeField] Button ButtonAdv;
 
     public static GamePopup Instance;
 
@@ -28,6 +29,11 @@ public class GamePopup : MonoBehaviour
 
     public void SetText(string text)
     {
-        ButtonText.text = text;
+        ButtonContinueOrAgain.text = text;
+    }
+
+    public void DeActivateButtonAdv()
+    {
+        ButtonAdv.gameObject.SetActive(false);
     }
 }

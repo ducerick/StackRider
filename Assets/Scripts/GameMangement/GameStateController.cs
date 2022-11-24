@@ -20,23 +20,6 @@ public class GameStateController : MonoBehaviour
         else Destroy(this);
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-    void Play()
-    {
-        _gameState = GameState.Playing;
-    }
-
     public GameState GetState()
     {
         return _gameState;
