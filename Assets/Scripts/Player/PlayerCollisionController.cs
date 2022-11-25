@@ -7,6 +7,8 @@ public class PlayerCollisionController : MonoBehaviour
 {
     [SerializeField] Transform _wall;
 
+    [SerializeField] AudioClip _coinSound;
+
     private float _scaleOfWall;
 
     public static PlayerCollisionController Instance;
@@ -35,6 +37,7 @@ public class PlayerCollisionController : MonoBehaviour
         {
             Transform otherTransform = other.transform;
             bool isHave = GameStackController.Instance.PickUp(otherTransform);
+            Vibrator.Vibrate(2000);
             if (GameStackController.Instance.NumberOfBall > 1 && !isHave)
             {
                 OnePlusMove(1, 2);
@@ -45,10 +48,13 @@ public class PlayerCollisionController : MonoBehaviour
         {
             Transform otherTranform = other.transform.parent;
             GameStackController.Instance.DropBall(_scaleOfWall, otherTranform);
+            Vibrator.Vibrate(2000);
         }
 
         if (other.transform.CompareTag("Coin"))
         {
+            AudioSource.PlayClipAtPoint(_coinSound, transform.position);
+            Vibrator.Vibrate(1000);
             GameScoreController.Instance.SetScore(1);
             other.transform.GetComponent<BoxCollider>().enabled = false;
             other.transform.localPosition = Vector3.Lerp(other.transform.localPosition, new Vector3(other.transform.localPosition.x, other.transform.localPosition.y + 10, other.transform.localPosition.z - 10), 3 * Time.deltaTime);

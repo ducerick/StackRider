@@ -33,4 +33,15 @@ public class GameEventController : MonoBehaviour
             OnFinishLine();
     }
 
+    public delegate void Explosion(Color color);
+    public event Explosion OnExplosion;
+
+    public void OnExplosionMethod(Color color)
+    {
+        if (OnExplosion != null)
+        {
+            OnExplosion(color);
+        }
+    }
+
 }

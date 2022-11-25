@@ -58,6 +58,7 @@ public class PlayerControllerStackRider : MonoBehaviour
     {
         _isPlaying = false;
         _myRigidBody.GetComponent<Rigidbody>().velocity = Vector3.zero;
-        GameStackController.Instance.PopStack(EndFlatform);
+        //GameStackController.Instance.PopStack(EndFlatform);
+        StartCoroutine(GameStackController.Instance.PopingStack(EndFlatform));
     }
 }

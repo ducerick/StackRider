@@ -22,7 +22,9 @@ public class GameStackController : MonoBehaviour
     /// </summary>
     [SerializeField] Transform _mainPlayer;
 
-    private List<Transform> _stackBall = new List<Transform>();
+    public Stack<Color> _listColorSuccess = new Stack<Color>();
+
+    public List<Transform> _stackBall = new List<Transform>();
 
     [SerializeField] float _ballRotationSpeed;
     private float _scaleOfBall;
@@ -65,6 +67,7 @@ public class GameStackController : MonoBehaviour
                 PlayerCollisionController.Instance.OnePlusMove(5 * (-_checkMainPosition), 2);
                 GameScoreController.Instance.SetScore(5 * (-_checkMainPosition) - 1);
                 _checkMainPosition -= 1;
+                //GameEventController.Instance.OnExplosionMethod(_listColorSuccess.Pop());
             }
 
            if (_checkMainPosition == -_numberOfBallRemain -1)
@@ -149,13 +152,35 @@ public class GameStackController : MonoBehaviour
 
     public void PopStack(Transform endtranform)
     {
+        foreach (var ball in _stackBall)
+        {
+            var color = ball.GetComponentInChildren<Renderer>().material.GetColor("_BaseColor");
+            Debug.Log(color);
+            _listColorSuccess.Push(color);
+        }
+
+
         _numberOfBallRemain = _stackBall.Count;
-        
+
         for (int i = 0; i <= _numberOfBallRemain - 1; i++)
         {
             Destroy(_stackBall[i].gameObject, _numberOfBallRemain - i + Time.deltaTime);
         }
         CameraController.Instance.SetPosition(endtranform);
+    }
+
+    public IEnumerator PopingStack(Transform endtransform)
+    {
+        //foreach(Transform ball in _stackBall)
+        for (int idx = _stackBall.Count - 1; idx >= 0; idx--)
+        {
+            var color = _stackBall[idx].GetComponentInChildren<Renderer>().material.GetColor("_BaseColor");
+            Destroy(_stackBall[idx].gameObject);
+            GameEventController.Instance.OnExplosionMethod(color);
+            //no (color)
+            yield return new WaitForSeconds(1f);
+        }
+        CameraController.Instance.SetPosition(endtransform);
     }
 
     private void GameFailed(Transform collision)
