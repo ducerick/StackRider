@@ -8,7 +8,7 @@ public class ScoreTextObject : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _destinyPosition = 100;
+        _destinyPosition = 200;
     }
 
     // Update is called once per frame

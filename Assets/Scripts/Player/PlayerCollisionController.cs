@@ -74,7 +74,7 @@ public class PlayerCollisionController : MonoBehaviour
             score.GetComponent<UnityEngine.UI.Text>().text = "+" + i.ToString();
             score.SetActive(true);
             score.transform.localPosition = new Vector3(score.transform.localPosition.x, 0, score.transform.localPosition.z);
-            score.transform.DOLocalMoveY(score.transform.localPosition.y + 100, duration);
+            score.transform.DOLocalMoveY(score.transform.localPosition.y + 200, duration);
             GameScoreController.Instance.SetScore(1);
         }
     }

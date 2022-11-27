@@ -29,8 +29,8 @@ public class CoinPool : MonoBehaviour
             obj.SetActive(false);
             _pooledObjects.Add(obj);
             obj.transform.SetParent(ScorePlus);
-            obj.transform.localPosition = new Vector3(100, 0, 0);
-            obj.transform.localScale = new Vector3(1, 1, 1);
+            obj.transform.localPosition = new Vector3(200, 0, 0);
+            obj.transform.localScale = new Vector3((float)1.5, (float)1.5, (float)1.5);
             obj.transform.rotation = new Quaternion(0, 0, 0, 0);
         }
     }
