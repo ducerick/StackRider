@@ -35,12 +35,6 @@ public class CoinPool : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public GameObject GetPooledObject()
     {
         for (int i = 0; i < _pooledObjects.Count; i++)

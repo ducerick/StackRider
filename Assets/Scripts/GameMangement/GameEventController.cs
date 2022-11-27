@@ -4,18 +4,6 @@ using UnityEngine;
 
 public class GameEventController : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public static GameEventController Instance;
 
     private void Awake()
@@ -25,7 +13,7 @@ public class GameEventController : MonoBehaviour
     }
 
     public delegate void FinishLine();
-    public event FinishLine OnFinishLine;
+    public event FinishLine OnFinishLine;  // Event that Player collision with Finish Line
 
     public void OnFinishLineMethod()
     {
@@ -34,7 +22,7 @@ public class GameEventController : MonoBehaviour
     }
 
     public delegate void Explosion(Color color);
-    public event Explosion OnExplosion;
+    public event Explosion OnExplosion;     // Event explosion ball
 
     public void OnExplosionMethod(Color color)
     {

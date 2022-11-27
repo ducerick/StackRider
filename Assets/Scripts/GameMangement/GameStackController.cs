@@ -5,31 +5,18 @@ using UnityEngine;
 
 public class GameStackController : MonoBehaviour
 {
-    /// <summary>
-    ///     This is a transform of Player
-    /// </summary>
-    [SerializeField] Transform _player;
-    /// <summary>
-    ///     This is a transform of initialize Ball under the Player
-    /// </summary>
-    [SerializeField] Transform _initBall;
-    /// <summary>
-    ///     This is a transform of Stack that contains any balls player pick up
-    /// </summary>
-    [SerializeField] Transform _stackPosition;
-    /// <summary>
-    ///     The List Stack contains ball
-    /// </summary>
-    [SerializeField] Transform _mainPlayer;
+    [SerializeField] Transform _player; //This is a transform of player
+    [SerializeField] Transform _initBall; //This is a transform of initialize Ball under the Player
+    [SerializeField] Transform _stackPosition; // This is a transform of Stack that contains any balls player pick up
+    [SerializeField] Transform _mainPlayer; // The List Stack contains ball
+    [SerializeField] float _ballRotationSpeed; // Speed of ratation ball
+   
+    private float _scaleOfBall; // Scale of ball object
+    public static int _checkMainPosition;   // check position of player object follow y axis
+    public static int _numberOfBallRemain;  // number of ball remain when attack End Transform
 
-    public Stack<Color> _listColorSuccess = new Stack<Color>();
-
-    public List<Transform> _stackBall = new List<Transform>();
-
-    [SerializeField] float _ballRotationSpeed;
-    private float _scaleOfBall;
-    public static int _checkMainPosition;
-    public static int _numberOfBallRemain;
+    public Stack<Color> _listColorSuccess = new Stack<Color>();  // List color of stack ball when player successfull
+    public List<Transform> _stackBall = new List<Transform>();  // List transform of ball at present
 
     public int NumberOfBall
     {
@@ -37,7 +24,7 @@ public class GameStackController : MonoBehaviour
         private set { }
     }
 
-    public static GameStackController Instance;
+    public static GameStackController Instance; // Singleton Pattern
 
     private void Awake()
     {
@@ -55,26 +42,25 @@ public class GameStackController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GameStateController.Instance.GetState() == GameState.Playing)
+        switch (GameStateController.Instance.GetState())
         {
-            RotateBallOnStack();
-        }
-
-        if (GameStateController.Instance.GetState() == GameState.Success)
-        {
-           if ((int)_mainPlayer.localPosition.y == _checkMainPosition)
-            {
-                PlayerCollisionController.Instance.OnePlusMove(5 * (-_checkMainPosition), 2);
-                GameScoreController.Instance.SetScore(5 * (-_checkMainPosition) - 1);
-                _checkMainPosition -= 1;
-                //GameEventController.Instance.OnExplosionMethod(_listColorSuccess.Pop());
-            }
-
-           if (_checkMainPosition == -_numberOfBallRemain -1)
-            {
-                GameScoreController.Instance.WrieFileScore();
-                GamePopup.Instance.SetPopup();
-            }
+            case GameState.Playing:  // rotate ball on List Stack at frame time
+                RotateBallOnStack();  
+                break;
+            case GameState.Success:
+                if (Math.Round(_mainPlayer.localPosition.y, 1) == (float)_checkMainPosition + 0.5)  // check position of player equal to _checkMainPosition value
+                {
+                    PlayerCollisionController.Instance.OnePlusMove(5 * (-_checkMainPosition), 2); // Move "One Plus" text using DOTwen
+                    GameScoreController.Instance.SetScore(5 * (-_checkMainPosition) - 1);   // Add value to score
+                    GameEventController.Instance.OnExplosionMethod(_listColorSuccess.Pop()); // Start event explosion using Particle System effect that have color is pop of Stack color
+                    _checkMainPosition -= 1; // Set check position less than 1 value (follow y axis)
+                }
+                if (_checkMainPosition == -_numberOfBallRemain - 1) // Explosiotn all of remain ball
+                {
+                    GameScoreController.Instance.WrieFileScore(); // write score to file
+                    GamePopup.Instance.SetPopup(); // Play popup menu
+                }
+                break;
         }
     }
 
@@ -150,54 +136,50 @@ public class GameStackController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    ///     Pop all ball of stack
+    /// </summary>
+    /// <param name="endtranform">
+    ///     Camera follow end transform
+    /// </param>
     public void PopStack(Transform endtranform)
     {
         foreach (var ball in _stackBall)
         {
-            var color = ball.GetComponentInChildren<Renderer>().material.GetColor("_BaseColor");
-            Debug.Log(color);
-            _listColorSuccess.Push(color);
+            var color = ball.GetComponentInChildren<Renderer>().material.color;
+            _listColorSuccess.Push(color); // push all color of remain stack
         }
-
 
         _numberOfBallRemain = _stackBall.Count;
 
         for (int i = 0; i <= _numberOfBallRemain - 1; i++)
         {
-            Destroy(_stackBall[i].gameObject, _numberOfBallRemain - i + Time.deltaTime);
+            Destroy(_stackBall[i].gameObject, _numberOfBallRemain - i + Time.deltaTime); // destroy color after time value equal high of ball
         }
         CameraController.Instance.SetPosition(endtranform);
     }
 
-    public IEnumerator PopingStack(Transform endtransform)
-    {
-        //foreach(Transform ball in _stackBall)
-        for (int idx = _stackBall.Count - 1; idx >= 0; idx--)
-        {
-            var color = _stackBall[idx].GetComponentInChildren<Renderer>().material.GetColor("_BaseColor");
-            Destroy(_stackBall[idx].gameObject);
-            GameEventController.Instance.OnExplosionMethod(color);
-            //no (color)
-            yield return new WaitForSeconds(1f);
-        }
-        CameraController.Instance.SetPosition(endtransform);
-    }
-
+    /// <summary>
+    ///     Set some of value game object when player failed
+    /// </summary>
+    /// <param name="collision">
+    ///     A wall object when played failed
+    /// </param>
     private void GameFailed(Transform collision)
     {
-        GameStateController.Instance.SetState(GameState.Failed);
-        PlayerControllerStackRider._isPlaying = false;
-        GameScoreController.Instance.WrieFileScore();
-        GamePopup.Instance.SetText("TRY AGAIN");
+        GameStateController.Instance.SetState(GameState.Failed); // Set state equal failed
+        PlayerControllerStackRider._isPlaying = false;  
+        GameScoreController.Instance.WrieFileScore(); // write score to file .txt
+        GamePopup.Instance.SetText("TRY AGAIN"); // Start Game Popup
         GamePopup.Instance.SetPopup();
         GamePopup.Instance.DeActivateButtonAdv();
-        _stackPosition.GetChild(0).gameObject.SetActive(false);
-        for (int i = 0; i < NumberOfBall; i++)
+        _stackPosition.GetChild(0).gameObject.SetActive(false); // Deactive smoke effect
+        for (int i = 0; i < NumberOfBall; i++) // Set remain ball follow parent is collision variable
         {
             _stackBall[i].SetParent(collision);
             _player.SetParent(_stackBall[i]);
-            CameraController.Instance.Player = _stackBall[i];
             _stackPosition.GetComponent<SphereCollider>().enabled = false;
+            CameraController.Instance.Player = _stackBall[i];
         }
     }
 }

@@ -12,7 +12,7 @@ public class MenuButtons : MonoBehaviour
 
     public void LoadSceneAndDoubleScore(string name)
     {
-        GameScoreController.Instance.SetScore(GameScoreController.Instance.GetScore());
+        GameScoreController.Instance.SetScore(GameScoreController.Instance.GetScore());  // double score
         Upgrade(name);
     }
 

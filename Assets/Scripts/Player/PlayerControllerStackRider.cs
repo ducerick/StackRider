@@ -46,7 +46,6 @@ public class PlayerControllerStackRider : MonoBehaviour
             transform.position = Vector3.MoveTowards(transform.position, new Vector3 (0, transform.position.y, EndFlatform.position.z), _speedFinish * Time.deltaTime);
             ParticleSmoke.gameObject.SetActive(false);
         }
-
     }
 
     private void MoveForward()
@@ -58,7 +57,6 @@ public class PlayerControllerStackRider : MonoBehaviour
     {
         _isPlaying = false;
         _myRigidBody.GetComponent<Rigidbody>().velocity = Vector3.zero;
-        //GameStackController.Instance.PopStack(EndFlatform);
-        StartCoroutine(GameStackController.Instance.PopingStack(EndFlatform));
+        GameStackController.Instance.PopStack(EndFlatform);
     }
 }

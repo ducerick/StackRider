@@ -12,7 +12,7 @@ public class JoystickPlayer : MonoBehaviour
     {
         if (GameStateController.Instance.GetState() == GameState.Playing)
         {
-            Vector3 pos = new Vector3((float)1.5, 0, 0);
+            Vector3 pos = new Vector3((float)1.75, 0, 0);
             Vector3 direction = pos * variableJoystick.Horizontal;
             transform.position = new Vector3(direction.x, transform.position.y, transform.position.z);
         }
