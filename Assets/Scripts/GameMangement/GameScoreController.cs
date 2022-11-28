@@ -10,8 +10,8 @@ public class GameScoreController : MonoBehaviour
     [SerializeField] Text CurrentTextScore;  //show score present that player have in center canvas
     [SerializeField] Text TextLevel;  //show level at present
 
-    public static readonly string TextFileScore = @"..\\StackRider\Assets\Resources\score.txt";  // link file .txt that contain score of game
-    public static readonly string TextFileLevel = @"..\\StackRider\Assets\Resources\level.txt";  // link file .txt that contain level of game
+    public static readonly string TextFileScore = @".\.\.\Assets\Resources\score.txt";  // link file .txt that contain score of game
+    public static readonly string TextFileLevel = @".\.\.\Assets\Resources\level.txt";  // link file .txt that contain level of game
 
     private int _score;
     private int _level;
