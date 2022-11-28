@@ -40,6 +40,7 @@ public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
 
     private Vector2 input = Vector2.zero;
     private Vector2 lastInput = Vector2.zero;
+    private float offset;
 
     private bool check = false;
 
@@ -79,7 +80,12 @@ public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
         FormatInput();
         HandleInput(input.magnitude, input.normalized, radius, cam);
 
-        if (check) input = lastInput;
+        if (check)
+        {
+            offset = lastInput.x * radius.x * canvas.scaleFactor + position.x - eventData.position.x;
+            input = lastInput;
+            background.position = new Vector3(eventData.position.x - offset, background.position.y, background.position.z);
+        }
         check = false;
 
         handle.anchoredPosition = input * radius * handleRange;
