@@ -54,11 +54,12 @@ public class GameStackController : MonoBehaviour
                     GameScoreController.Instance.SetScore(5 * (-_checkMainPosition) - 1);   // Add value to score
                     GameEventController.Instance.OnExplosionMethod(_listColorSuccess.Pop()); // Start event explosion using Particle System effect that have color is pop of Stack color
                     _checkMainPosition -= 1; // Set check position less than 1 value (follow y axis)
+                    Vibrator.Vibrate(50);
                 }
                 if (_checkMainPosition == -_numberOfBallRemain - 1) // Explosiotn all of remain ball
                 {
-                    GameScoreController.Instance.WrieFileScore(); // write score to file
-                    GamePopup.Instance.SetPopup(); // Play popup menu
+                    PlayerPrefsController.Instance.AddScore(); // write score to file
+                    CanvasStaticController.instance.GamePopupController.gameObject.SetActive(true);
                 }
                 break;
         }
@@ -168,10 +169,10 @@ public class GameStackController : MonoBehaviour
     private void GameFailed(Transform collision)
     {
         GameStateController.Instance.SetState(GameState.Failed); // Set state equal failed
-        PlayerControllerStackRider._isPlaying = false;  
-        GameScoreController.Instance.WrieFileScore(); // write score to file .txt
+        PlayerControllerStackRider._isPlaying = false;
+        PlayerPrefsController.Instance.AddScore(); // write score to file .txt
+        CanvasStaticController.instance.GamePopupController.gameObject.SetActive(true);
         GamePopup.Instance.SetText("TRY AGAIN"); // Start Game Popup
-        GamePopup.Instance.SetPopup();
         GamePopup.Instance.DeActivateButtonAdv();
         _stackPosition.GetChild(0).gameObject.SetActive(false); // Deactive smoke effect
         for (int i = 0; i < NumberOfBall; i++) // Set remain ball follow parent is collision variable

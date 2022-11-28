@@ -19,7 +19,7 @@ public class MenuButtons : MonoBehaviour
     private void Upgrade(string name)
     {
         GameScoreController.Instance.SetLevel(1);
-        GameScoreController.Instance.WriteFileLevel();
+        PlayerPrefsController.Instance.AddLevel();
         SceneManager.LoadScene(name);
     }
 }

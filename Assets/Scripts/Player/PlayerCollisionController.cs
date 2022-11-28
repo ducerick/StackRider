@@ -31,20 +31,20 @@ public class PlayerCollisionController : MonoBehaviour
             case "Ball":
                 Transform otherTransform = other.transform;
                 bool isHave = GameStackController.Instance.PickUp(otherTransform);
-                Vibrator.Vibrate(2000);
                 if (GameStackController.Instance.NumberOfBall > 1 && !isHave) 
                 {
                     OnePlusMove(1, 2);
+                    Vibrator.Vibrate(50);
                 }
                 break;
             case "Wall":
                 Transform otherTranform = other.transform.parent;
                 GameStackController.Instance.DropBall(_scaleOfWall, otherTranform);
-                Vibrator.Vibrate(2000);
+                Vibrator.Vibrate(100);
                 break;
             case "Coin":
                 AudioSource.PlayClipAtPoint(_coinSound, transform.position);
-                Vibrator.Vibrate(1000);
+                Vibrator.Vibrate(50);
                 GameScoreController.Instance.SetScore(1);
                 other.transform.GetComponent<BoxCollider>().enabled = false;
                 other.transform.localPosition = Vector3.Lerp(other.transform.localPosition, new Vector3(other.transform.localPosition.x, other.transform.localPosition.y + 10, other.transform.localPosition.z - 10), 3 * Time.deltaTime);
