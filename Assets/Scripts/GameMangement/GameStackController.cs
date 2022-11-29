@@ -45,8 +45,7 @@ public class GameStackController : MonoBehaviour
         switch (GameStateController.Instance.GetState())
         {
             case GameState.Playing:  // rotate ball on List Stack at frame time
-                RotateBallOnStack();
-                _checkMainPosition = -1;
+                RotateBallOnStack();  
                 break;
             case GameState.Success:
                 if (Math.Round(_mainPlayer.localPosition.y, 1) == (float)_checkMainPosition + 0.5)  // check position of player equal to _checkMainPosition value
