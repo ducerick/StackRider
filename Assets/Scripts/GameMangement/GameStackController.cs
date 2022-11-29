@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
+
 
 public class GameStackController : MonoBehaviour
 {
@@ -12,8 +14,10 @@ public class GameStackController : MonoBehaviour
     [SerializeField] float _ballRotationSpeed; // Speed of ratation ball
    
     private float _scaleOfBall; // Scale of ball object
-    public static int _checkMainPosition;   // check position of player object follow y axis
     public static int _numberOfBallRemain;  // number of ball remain when attack End Transform
+    private float _startLava;
+    private Transform _plane;
+    private int count;
 
     public Stack<Color> _listColorSuccess = new Stack<Color>();  // List color of stack ball when player successfull
     public List<Transform> _stackBall = new List<Transform>();  // List transform of ball at present
@@ -36,7 +40,9 @@ public class GameStackController : MonoBehaviour
     void Start()
     {
         _scaleOfBall = _initBall.localScale.y;
-        _checkMainPosition = -1;
+        _startLava = -1;
+        count = 1;
+        GameEventController.Instance.OnLyingLava += OnLyingLava;
     }
 
     // Update is called once per frame
@@ -45,18 +51,28 @@ public class GameStackController : MonoBehaviour
         switch (GameStateController.Instance.GetState())
         {
             case GameState.Playing:  // rotate ball on List Stack at frame time
-                RotateBallOnStack();  
+                RotateBallOnStack();
+                if ((int)_stackPosition.position.z == (int)(_startLava + Math.PI * _scaleOfBall) && _startLava < _plane.localPosition.z)
+                {
+                    _stackBall[NumberOfBall - 1].gameObject.SetActive(false);
+                    _stackBall.RemoveAt(NumberOfBall - 1);
+                    _startLava += (float)Math.PI *_scaleOfBall ;
+                  
+                }
+                //if (NumberOfBall == 0) GameFailed();
                 break;
             case GameState.Success:
-                if (Math.Round(_mainPlayer.localPosition.y, 1) == (float)_checkMainPosition + 0.5)  // check position of player equal to _checkMainPosition value
+       
+                if ((int)Math.Round(_mainPlayer.localPosition.y) == _numberOfBallRemain - 1)  // check position of player equal to _checkMainPosition value
                 {
-                    PlayerCollisionController.Instance.OnePlusMove(5 * (-_checkMainPosition), 2); // Move "One Plus" text using DOTwen
-                    GameScoreController.Instance.SetScore(5 * (-_checkMainPosition) - 1);   // Add value to score
+                    PlayerCollisionController.Instance.OnePlusMove(5 * count, 2); // Move "One Plus" text using DOTwen
+                    GameScoreController.Instance.SetScore(5 * count);   // Add value to score
                     GameEventController.Instance.OnExplosionMethod(_listColorSuccess.Pop()); // Start event explosion using Particle System effect that have color is pop of Stack color
-                    _checkMainPosition -= 1; // Set check position less than 1 value (follow y axis)
+                    _numberOfBallRemain -= 1; // Set check position less than 1 value (follow y axis)
+                    count++;
                     Vibrator.Vibrate(50);
                 }
-                if (_checkMainPosition == -_numberOfBallRemain - 1) // Explosiotn all of remain ball
+                if (_numberOfBallRemain == 0) // Explosiotn all of remain ball
                 {
                     PlayerPrefsController.Instance.AddScore(); // write score to file
                     CanvasStaticController.instance.GamePopupController.gameObject.SetActive(true);
@@ -93,6 +109,7 @@ public class GameStackController : MonoBehaviour
             isHave = false;
             _stackBall.Add(ball);
         }
+        if (isHave) return isHave;
         PushStack();
         return isHave;
     }
@@ -123,7 +140,14 @@ public class GameStackController : MonoBehaviour
         int numberBallDrop = (int)(obstacleSize / _scaleOfBall) * collision.childCount;
         if (numberBallDrop >= NumberOfBall)
         {
-            GameFailed(collision);
+            GameFailed();
+            for (int i = 0; i < NumberOfBall; i++) // Set remain ball follow parent is collision variable
+            {
+                _stackBall[i].SetParent(collision);
+                _player.SetParent(_stackBall[i]);
+                _stackPosition.GetComponent<SphereCollider>().enabled = false;
+                CameraController.Instance.Player = _stackBall[i];
+            }
         }
         else
         {
@@ -166,7 +190,7 @@ public class GameStackController : MonoBehaviour
     /// <param name="collision">
     ///     A wall object when played failed
     /// </param>
-    private void GameFailed(Transform collision)
+    private void GameFailed()
     {
         GameStateController.Instance.SetState(GameState.Failed); // Set state equal failed
         PlayerControllerStackRider._isPlaying = false;
@@ -175,12 +199,24 @@ public class GameStackController : MonoBehaviour
         GamePopup.Instance.SetText("TRY AGAIN"); // Start Game Popup
         GamePopup.Instance.DeActivateButtonAdv();
         _stackPosition.GetChild(0).gameObject.SetActive(false); // Deactive smoke effect
-        for (int i = 0; i < NumberOfBall; i++) // Set remain ball follow parent is collision variable
+    }
+
+    private void OnLyingLava(Transform transform)
+    {
+        _startLava = _stackPosition.position.z ;
+        _plane = transform;
+        int numberBallDead = (int)((_plane.position.z - _startLava)/(Math.PI*_scaleOfBall));
+        numberBallDead = (numberBallDead < NumberOfBall) ? numberBallDead : NumberOfBall;
+        for (int i = 0; i < numberBallDead; i++)
         {
-            _stackBall[i].SetParent(collision);
-            _player.SetParent(_stackBall[i]);
-            _stackPosition.GetComponent<SphereCollider>().enabled = false;
-            CameraController.Instance.Player = _stackBall[i];
+            _stackBall[NumberOfBall - i - 1].GetComponent<Collider>().isTrigger = true;
+            //_stackBall[NumberOfBall - i - 1].DOLocalMoveY(-(numberBallDead - i), (float)(i+1)/2);
         }
+        
+        foreach(var ball in _stackBall)
+        {
+            ball.DOLocalMoveY(ball.position.y - numberBallDead , numberBallDead);
+        }
+    
     }
 }

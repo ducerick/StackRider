@@ -54,6 +54,9 @@ public class PlayerCollisionController : MonoBehaviour
                 GameStateController.Instance.SetState(GameState.Success);
                 GameEventController.Instance.OnFinishLineMethod();
                 break;
+            case "Lava":
+                GameEventController.Instance.OnLyingLavaMethod(other.transform);
+                break;
         }
     }
 
@@ -64,6 +67,7 @@ public class PlayerCollisionController : MonoBehaviour
             int walls = other.transform.parent.childCount;
             OnePlusMove(walls, 1);
         }
+
     }
 
     public void OnePlusMove(int i, float duration)

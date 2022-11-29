@@ -32,4 +32,15 @@ public class GameEventController : MonoBehaviour
         }
     }
 
+    public delegate void LyingLava(Transform transform);
+    public event LyingLava OnLyingLava;
+
+    public void OnLyingLavaMethod(Transform transform)
+    {
+        if (OnLyingLava != null)
+        {
+            OnLyingLava(transform);
+        }
+    }
+
 }

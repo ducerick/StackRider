@@ -7,7 +7,7 @@ using UnityEngine.ParticleSystemJobs;
 
 public class PlayerControllerStackRider : MonoBehaviour
 {
-    [SerializeField] float _moveForwardSpeed;
+    public float _moveForwardSpeed;
     public static bool _isPlaying;
     private Rigidbody _myRigidBody;
     public float _speedFinish;
@@ -15,6 +15,17 @@ public class PlayerControllerStackRider : MonoBehaviour
     public Slider Slider;
     public ParticleSystem ParticleSmoke;
     public Image MouseImage;
+
+    public static PlayerControllerStackRider Instance;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else Destroy(this);
+    }
 
     // Start is called before the first frame update
     void Start()

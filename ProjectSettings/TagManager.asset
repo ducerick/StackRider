@@ -9,6 +9,7 @@ TagManager:
   - Wall
   - Coin
   - End
+  - Lava
   layers:
   - Default
   - TransparentFX
