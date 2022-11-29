@@ -5,7 +5,7 @@ using UnityEngine;
 public class JoystickPlayer : MonoBehaviour
 {
     public float speed;
-    public FixedJoystick variableJoystick;
+    public FloatingJoystick variableJoystick;
     public Rigidbody rb;
 
     public void Update()
