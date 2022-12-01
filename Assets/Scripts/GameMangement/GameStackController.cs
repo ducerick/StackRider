@@ -16,8 +16,9 @@ public class GameStackController : MonoBehaviour
     private float _scaleOfBall; // Scale of ball object
     public static int _numberOfBallRemain;  // number of ball remain when attack End Transform
     private float _startLava;
-    private Transform _plane;
+    private float _nextLava;
     private int count;
+    private int numberBallDead = -1;
 
     public Stack<Color> _listColorSuccess = new Stack<Color>();  // List color of stack ball when player successfull
     public List<Transform> _stackBall = new List<Transform>();  // List transform of ball at present
@@ -52,14 +53,33 @@ public class GameStackController : MonoBehaviour
         {
             case GameState.Playing:  // rotate ball on List Stack at frame time
                 RotateBallOnStack();
-                if ((int)_stackPosition.position.z == (int)(_startLava + Math.PI * _scaleOfBall) && _startLava < _plane.localPosition.z)
+                //if ((int)_stackPosition.position.z == (int)(_startLava + Math.PI * _scaleOfBall) && _startLava < _plane.localPosition.z)
+                //{
+                //    _stackBall[NumberOfBall - 1].gameObject.SetActive(false);
+                //    _stackBall.RemoveAt(NumberOfBall - 1);
+                //    _startLava += (float)Math.PI *_scaleOfBall ;
+
+                //}
+                //if (NumberOfBall == 0) GameFailed();
+                if ((int)Math.Round(_stackPosition.position.z) == (int)_nextLava && numberBallDead > 0)
                 {
                     _stackBall[NumberOfBall - 1].gameObject.SetActive(false);
+                    _stackBall[NumberOfBall - 1].GetComponent<Rigidbody>().isKinematic = true ;
                     _stackBall.RemoveAt(NumberOfBall - 1);
-                    _startLava += (float)Math.PI *_scaleOfBall ;
-                  
+                    _nextLava += (float)Math.PI * _scaleOfBall;
+                    numberBallDead--;
                 }
-                //if (NumberOfBall == 0) GameFailed();
+
+                if ((int)Math.Round(_stackPosition.position.z) == (int)_startLava && numberBallDead > 0)
+                {
+                    var duration = (float)Math.PI * _scaleOfBall / PlayerControllerStackRider.Instance._moveForwardSpeed;
+                    foreach (var ball in _stackBall)
+                    {
+                        ball.DOLocalMoveY(ball.localPosition.y - _scaleOfBall, duration);
+                    }
+                    _player.DOLocalMoveY(_player.localPosition.y - _scaleOfBall, duration);
+                    _startLava += (float)Math.PI * _scaleOfBall;
+                }
                 break;
             case GameState.Success:
        
@@ -204,19 +224,23 @@ public class GameStackController : MonoBehaviour
     private void OnLyingLava(Transform transform)
     {
         _startLava = _stackPosition.position.z ;
-        _plane = transform;
-        int numberBallDead = (int)((_plane.position.z - _startLava)/(Math.PI*_scaleOfBall));
-        numberBallDead = (numberBallDead < NumberOfBall) ? numberBallDead : NumberOfBall;
-        for (int i = 0; i < numberBallDead; i++)
-        {
-            _stackBall[NumberOfBall - i - 1].GetComponent<Collider>().isTrigger = true;
-            //_stackBall[NumberOfBall - i - 1].DOLocalMoveY(-(numberBallDead - i), (float)(i+1)/2);
-        }
-        
-        foreach(var ball in _stackBall)
-        {
-            ball.DOLocalMoveY(ball.position.y - numberBallDead , numberBallDead);
-        }
-    
+        _nextLava = (float)(_startLava + Math.PI * _scaleOfBall);
+        numberBallDead = (int)Math.Round((transform.position.z - _startLava)/(Math.PI * _scaleOfBall) );
+        //numberBallDead = (numberBallDead < NumberOfBall) ? numberBallDead : NumberOfBall;
+        //for (int i = 0; i < numberBallDead; i++)
+        //{
+        //    _stackBall[NumberOfBall - i - 1].GetComponent<Collider>().isTrigger = true;
+            //_stackBall[NumberOfBall - i - 1].DOLocalMoveY(-(i + 1), (i+1)*0.1f);
+            //_stackBall[NumberOfBall - i - 1].SetParent(null);
+            //_stackBall.RemoveAt(NumberOfBall - i - 1);
+        //}
+
+        //foreach (var ball in _stackBall)
+        //{
+        //    ball.DOLocalMoveY(ball.localPosition.y - numberBallDead, numberBallDead);
+        //}
+
+        //_player.DOLocalMoveY(_player.localPosition.y - numberBallDead, numberBallDead);
+
     }
 }
