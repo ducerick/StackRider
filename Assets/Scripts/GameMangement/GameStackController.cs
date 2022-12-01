@@ -46,6 +46,16 @@ public class GameStackController : MonoBehaviour
         GameEventController.Instance.OnLyingLava += OnLyingLava;
     }
 
+    //public void EnableLava()
+    //{
+    //    GameEventController.Instance.OnLyingLava += OnLyingLava;
+    //}
+
+    //public void DisableLava()
+    //{
+    //    GameEventController.Instance.OnLyingLava += OnLyingLava;
+    //}
+
     // Update is called once per frame
     void Update()
     {
@@ -53,33 +63,35 @@ public class GameStackController : MonoBehaviour
         {
             case GameState.Playing:  // rotate ball on List Stack at frame time
                 RotateBallOnStack();
-                //if ((int)_stackPosition.position.z == (int)(_startLava + Math.PI * _scaleOfBall) && _startLava < _plane.localPosition.z)
-                //{
-                //    _stackBall[NumberOfBall - 1].gameObject.SetActive(false);
-                //    _stackBall.RemoveAt(NumberOfBall - 1);
-                //    _startLava += (float)Math.PI *_scaleOfBall ;
 
-                //}
-                //if (NumberOfBall == 0) GameFailed();
-                if ((int)Math.Round(_stackPosition.position.z) == (int)_nextLava && numberBallDead > 0)
+                if ((int)Math.Round(_stackPosition.position.z) == (int)Math.Round(_nextLava) && numberBallDead >= 0)
                 {
                     _stackBall[NumberOfBall - 1].gameObject.SetActive(false);
                     _stackBall[NumberOfBall - 1].GetComponent<Rigidbody>().isKinematic = true ;
+                    _stackBall[NumberOfBall - 1].SetParent(null);
                     _stackBall.RemoveAt(NumberOfBall - 1);
                     _nextLava += (float)Math.PI * _scaleOfBall;
                     numberBallDead--;
                 }
 
-                if ((int)Math.Round(_stackPosition.position.z) == (int)_startLava && numberBallDead > 0)
+                if ((int)Math.Round(_stackPosition.position.z) == (int)Math.Round(_startLava) && numberBallDead >= 0)
                 {
-                    var duration = (float)Math.PI * _scaleOfBall / PlayerControllerStackRider.Instance._moveForwardSpeed;
-                    foreach (var ball in _stackBall)
+                    if (NumberOfBall == 1)
                     {
-                        ball.DOLocalMoveY(ball.localPosition.y - _scaleOfBall, duration);
+                        GameFailed();
                     }
-                    _player.DOLocalMoveY(_player.localPosition.y - _scaleOfBall, duration);
-                    _startLava += (float)Math.PI * _scaleOfBall;
+                    else
+                    {
+                        var duration = (float)Math.PI * _scaleOfBall / PlayerControllerStackRider.Instance._moveForwardSpeed;
+                        foreach (var ball in _stackBall)
+                        {
+                            ball.DOLocalMoveY(ball.localPosition.y - _scaleOfBall, duration);
+                        }
+                        _player.DOLocalMoveY(_player.localPosition.y - _scaleOfBall, duration);
+                        _startLava += (float)Math.PI * _scaleOfBall;
+                    }
                 }
+
                 break;
             case GameState.Success:
        
@@ -161,13 +173,6 @@ public class GameStackController : MonoBehaviour
         if (numberBallDrop >= NumberOfBall)
         {
             GameFailed();
-            for (int i = 0; i < NumberOfBall; i++) // Set remain ball follow parent is collision variable
-            {
-                _stackBall[i].SetParent(collision);
-                _player.SetParent(_stackBall[i]);
-                _stackPosition.GetComponent<SphereCollider>().enabled = false;
-                CameraController.Instance.Player = _stackBall[i];
-            }
         }
         else
         {
@@ -219,6 +224,13 @@ public class GameStackController : MonoBehaviour
         GamePopup.Instance.SetText("TRY AGAIN"); // Start Game Popup
         GamePopup.Instance.DeActivateButtonAdv();
         _stackPosition.GetChild(0).gameObject.SetActive(false); // Deactive smoke effect
+        for (int i = 0; i < NumberOfBall; i++) // Set remain ball follow parent is collision variable
+        {
+            _stackBall[i].SetParent(null);
+            _player.SetParent(_stackBall[i]);
+            _stackPosition.GetComponent<SphereCollider>().enabled = false;
+            CameraController.Instance.Player = _stackBall[i];
+        }
     }
 
     private void OnLyingLava(Transform transform)
@@ -226,21 +238,10 @@ public class GameStackController : MonoBehaviour
         _startLava = _stackPosition.position.z ;
         _nextLava = (float)(_startLava + Math.PI * _scaleOfBall);
         numberBallDead = (int)Math.Round((transform.position.z - _startLava)/(Math.PI * _scaleOfBall) );
-        //numberBallDead = (numberBallDead < NumberOfBall) ? numberBallDead : NumberOfBall;
-        //for (int i = 0; i < numberBallDead; i++)
-        //{
-        //    _stackBall[NumberOfBall - i - 1].GetComponent<Collider>().isTrigger = true;
-            //_stackBall[NumberOfBall - i - 1].DOLocalMoveY(-(i + 1), (i+1)*0.1f);
-            //_stackBall[NumberOfBall - i - 1].SetParent(null);
-            //_stackBall.RemoveAt(NumberOfBall - i - 1);
-        //}
-
-        //foreach (var ball in _stackBall)
-        //{
-        //    ball.DOLocalMoveY(ball.localPosition.y - numberBallDead, numberBallDead);
-        //}
-
-        //_player.DOLocalMoveY(_player.localPosition.y - numberBallDead, numberBallDead);
-
+        if (numberBallDead == NumberOfBall) numberBallDead--;
+        foreach(var ball in _stackBall)
+        {
+            ball.GetComponent<Rigidbody>().isKinematic = true;
+        }
     }
 }

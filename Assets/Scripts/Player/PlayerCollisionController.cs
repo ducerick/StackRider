@@ -55,6 +55,7 @@ public class PlayerCollisionController : MonoBehaviour
                 GameEventController.Instance.OnFinishLineMethod();
                 break;
             case "Lava":
+                //GameStackController.Instance.EnableLava();
                 GameEventController.Instance.OnLyingLavaMethod(other.transform);
                 break;
         }
@@ -66,6 +67,16 @@ public class PlayerCollisionController : MonoBehaviour
         {
             int walls = other.transform.parent.childCount;
             OnePlusMove(walls, 1);
+        }
+
+        if (other.transform.CompareTag("Lava"))
+        {
+            //GameStackController.Instance.DisableLava();
+            foreach(var ball in GameStackController.Instance._stackBall)
+            {
+                ball.GetComponent<Rigidbody>().isKinematic = false;
+            }
+
         }
 
     }
