@@ -55,7 +55,7 @@ public class GameStackController : MonoBehaviour
             case GameState.Playing:  
                 RotateBallOnStack(); // rotate ball on List Stack at frame time
 
-                if ((int)Math.Round(_stackPosition.position.z) == (int)Math.Round(_nextLava) && numberBallDead >= 0)
+                if ((int)Math.Round(_stackPosition.position.z) == (int)Math.Round(_nextLava) && numberBallDead >= 0 && PlayerCollisionController.OnLyingLava)
                 {
                     _stackBall[NumberOfBall - 1].gameObject.SetActive(false);
                     _stackBall[NumberOfBall - 1].GetComponent<Rigidbody>().isKinematic = true ;
@@ -66,13 +66,13 @@ public class GameStackController : MonoBehaviour
                     numberBallDead--;
                 }
 
-                if ((int)Math.Round(_stackPosition.position.z) == (int)Math.Round(_startLava) && numberBallDead >= 0)
+                if ((int)Math.Round(_stackPosition.position.z) == (int)Math.Round(_startLava) && numberBallDead >= 0 && PlayerCollisionController.OnLyingLava)
                 {
                     if (NumberOfBall == 1)
                     {
                         GameFailed();
                     }
-                    else if (PlayerCollisionController.OnLyingLava)
+                    else 
                     {
                         var duration = (float)Math.PI * _scaleOfBall / PlayerControllerStackRider.Instance._moveForwardSpeed;
                         _listTween.Clear();
@@ -80,7 +80,7 @@ public class GameStackController : MonoBehaviour
                         {
                             _listTween.Add(ball.DOLocalMoveY(ball.localPosition.y - _scaleOfBall, duration));
                         }
-                        _player.DOLocalMoveY(_player.localPosition.y - _scaleOfBall, duration);
+                        _listTween.Add(_player.DOLocalMoveY(_player.localPosition.y - _scaleOfBall, duration));
                         _startLava += (float)Math.PI * _scaleOfBall;
                     }
                 }
@@ -242,11 +242,13 @@ public class GameStackController : MonoBehaviour
     {
         if (_stackBall[NumberOfBall - 1].localPosition.y < 0)
         {
+            _stackBall[NumberOfBall - 1].GetComponent<SphereCollider>().enabled = false;
             _stackBall[NumberOfBall - 1].gameObject.SetActive(false);
             _stackBall[NumberOfBall - 1].SetParent(null);
             _stackBall.RemoveAt(NumberOfBall - 1);
+            _listTween.RemoveAt(_listTween.Count - 1);
+            PushStack();
         }
-        PushStack();
     }
 
     public void KillBallTween()
