@@ -7,7 +7,7 @@ using DG.Tweening;
 
 public class GameStackController : MonoBehaviour
 {
-    [SerializeField] Transform _player; //This is a transform of player
+    public Transform _player; //This is a transform of player
     [SerializeField] Transform _initBall; //This is a transform of initialize Ball under the Player
     [SerializeField] Transform _stackPosition; // This is a transform of Stack that contains any balls player pick up
     [SerializeField] Transform _mainPlayer; // The List Stack contains ball
@@ -22,6 +22,7 @@ public class GameStackController : MonoBehaviour
 
     public Stack<Color> _listColorSuccess = new Stack<Color>();  // List color of stack ball when player successfull
     public List<Transform> _stackBall = new List<Transform>();  // List transform of ball at present
+    public List<Tween> _listTween = new List<Tween>();
 
     public int NumberOfBall
     {
@@ -46,29 +47,20 @@ public class GameStackController : MonoBehaviour
         GameEventController.Instance.OnLyingLava += OnLyingLava;
     }
 
-    //public void EnableLava()
-    //{
-    //    GameEventController.Instance.OnLyingLava += OnLyingLava;
-    //}
-
-    //public void DisableLava()
-    //{
-    //    GameEventController.Instance.OnLyingLava += OnLyingLava;
-    //}
-
     // Update is called once per frame
     void Update()
     {
         switch (GameStateController.Instance.GetState())
         {
-            case GameState.Playing:  // rotate ball on List Stack at frame time
-                RotateBallOnStack();
+            case GameState.Playing:  
+                RotateBallOnStack(); // rotate ball on List Stack at frame time
 
                 if ((int)Math.Round(_stackPosition.position.z) == (int)Math.Round(_nextLava) && numberBallDead >= 0)
                 {
                     _stackBall[NumberOfBall - 1].gameObject.SetActive(false);
                     _stackBall[NumberOfBall - 1].GetComponent<Rigidbody>().isKinematic = true ;
                     _stackBall[NumberOfBall - 1].SetParent(null);
+                    _stackBall[NumberOfBall - 1].GetComponent<SphereCollider>().enabled = false;
                     _stackBall.RemoveAt(NumberOfBall - 1);
                     _nextLava += (float)Math.PI * _scaleOfBall;
                     numberBallDead--;
@@ -80,12 +72,13 @@ public class GameStackController : MonoBehaviour
                     {
                         GameFailed();
                     }
-                    else
+                    else if (PlayerCollisionController.OnLyingLava)
                     {
                         var duration = (float)Math.PI * _scaleOfBall / PlayerControllerStackRider.Instance._moveForwardSpeed;
+                        _listTween.Clear();
                         foreach (var ball in _stackBall)
                         {
-                            ball.DOLocalMoveY(ball.localPosition.y - _scaleOfBall, duration);
+                            _listTween.Add(ball.DOLocalMoveY(ball.localPosition.y - _scaleOfBall, duration));
                         }
                         _player.DOLocalMoveY(_player.localPosition.y - _scaleOfBall, duration);
                         _startLava += (float)Math.PI * _scaleOfBall;
@@ -242,6 +235,25 @@ public class GameStackController : MonoBehaviour
         foreach(var ball in _stackBall)
         {
             ball.GetComponent<Rigidbody>().isKinematic = true;
+        }
+    }
+
+    public void RemoveLastBall()
+    {
+        if (_stackBall[NumberOfBall - 1].localPosition.y < 0)
+        {
+            _stackBall[NumberOfBall - 1].gameObject.SetActive(false);
+            _stackBall[NumberOfBall - 1].SetParent(null);
+            _stackBall.RemoveAt(NumberOfBall - 1);
+        }
+        PushStack();
+    }
+
+    public void KillBallTween()
+    {
+        foreach(var tween in _listTween)
+        {
+            tween.Kill();
         }
     }
 }

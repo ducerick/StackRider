@@ -8,6 +8,8 @@ public class PlayerCollisionController : MonoBehaviour
     [SerializeField] Transform _wall; // wall obstacle
     [SerializeField] AudioClip _coinSound; // coin sound
 
+    public static bool OnLyingLava;
+
     private float _scaleOfWall;
 
     public static PlayerCollisionController Instance; // Singleton Pattern
@@ -22,6 +24,7 @@ public class PlayerCollisionController : MonoBehaviour
     void Start()
     {
         _scaleOfWall = _wall.localScale.y;
+        OnLyingLava = false;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -55,7 +58,7 @@ public class PlayerCollisionController : MonoBehaviour
                 GameEventController.Instance.OnFinishLineMethod();
                 break;
             case "Lava":
-                //GameStackController.Instance.EnableLava();
+                OnLyingLava = true;
                 GameEventController.Instance.OnLyingLavaMethod(other.transform);
                 break;
         }
@@ -71,12 +74,13 @@ public class PlayerCollisionController : MonoBehaviour
 
         if (other.transform.CompareTag("Lava"))
         {
-            //GameStackController.Instance.DisableLava();
-            foreach(var ball in GameStackController.Instance._stackBall)
+            OnLyingLava = false;
+            foreach (var ball in GameStackController.Instance._stackBall)
             {
                 ball.GetComponent<Rigidbody>().isKinematic = false;
             }
-
+            GameStackController.Instance.RemoveLastBall();
+            GameStackController.Instance.KillBallTween();
         }
 
     }

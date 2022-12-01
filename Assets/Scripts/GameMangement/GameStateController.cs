@@ -5,7 +5,7 @@ public enum GameState
     Idle,
     Playing,
     Failed,
-    Success
+    Success,
 }
 
 public class GameStateController : MonoBehaviour
